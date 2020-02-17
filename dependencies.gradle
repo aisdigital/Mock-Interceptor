@@ -1,0 +1,25 @@
+project.ext {
+
+    // Example dependencies
+    koinVersion = "2.0.1"
+
+    // Network dependencies
+    retrofitVersion = "2.7.1"
+    retrfitGsonConverterVersion = "2.8.6"
+
+    // Logging
+    timberVersion = "4.7.1"
+
+    // Test
+    junitVersion = "4.12"
+    truthVersion = "1.0"
+    androidXTestCoreVersion = "1.2.0"
+    androidXTestRunnerVersion = "1.2.0"
+    androidXTestEspressoVersion = "3.2.0"
+    robolectricVersion = "4.3.1"
+
+    // Test Mock
+    mockitoVersion = "3.1.0"
+    archTestingVersion = "1.1.1"
+
+}

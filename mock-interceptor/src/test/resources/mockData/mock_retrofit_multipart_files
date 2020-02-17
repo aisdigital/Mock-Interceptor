@@ -1,0 +1,29 @@
+[
+    {
+        "code": 200,
+        "requestForm": "[
+            {
+                'MyFirstParam': 'MyFirstParamValue'
+            }
+        ]",
+        "response": "{
+            'message': 'Email response success',
+            'code': 170
+        }"
+    },
+    {
+        "code": 201,
+        "requestForm": "[
+            {
+                'MyFirstParam': 'MyFirstParamValue'
+            },
+            {
+                'MySecondParam': 'MySecondParamValue'
+            }
+        ]",
+        "response": "{
+            'message': 'Email response success',
+            'code': 112
+        }"
+    }
+]

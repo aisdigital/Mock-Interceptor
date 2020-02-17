@@ -1,0 +1,17 @@
+[
+    {
+        "code": 201,
+        "requestForm": "[
+            {
+                'cpf': '012.345.678-90'
+            },
+            {
+                'myMap': '10'
+            }
+        ]",
+        "response": "{
+            'message': 'Email response success',
+            'code': 470
+        }"
+    }
+]

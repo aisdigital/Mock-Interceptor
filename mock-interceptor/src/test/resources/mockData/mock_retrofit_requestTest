@@ -1,0 +1,44 @@
+[
+    {
+        "code": 200,
+        "request": "{
+            'email': 'myEmail@gmail.com'
+        }",
+        "response": "{
+            'message': 'Email response success',
+            'code': 999
+        }",
+        "requestForm": "[
+            {
+                'key': '1',
+                'value': '100'
+            },
+            {
+                'key': 'my',
+                'value': '100'
+            }
+        ]"
+    },
+    {
+        "code": 200,
+        "request": "{
+            'email': 'test@gmail.com'
+        }",
+        "response": "{
+            'message': 'Email response success',
+            'code': 999
+        }"
+    },
+    {
+        "code": 400,
+        "request": "{
+            'email': 'testFail@gmail.com'
+        }"
+    },
+    {
+    "code": 500,
+        "request": "{
+            'email': 'testServerError@gmail.com'
+        }"
+    }
+]

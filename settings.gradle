@@ -1,0 +1,2 @@
+include ':mock-interceptor', ':example'
+rootProject.name='Mock-Interceptor'

@@ -1,0 +1,31 @@
+[
+    {
+        "code": 200,
+        "requestForm": "[
+            {
+                'cpf': '012.345.678-90'
+            }
+        ]",
+        "response": "{
+            'message': 'Email response success',
+            'code': 210
+        }"
+    },
+    {
+        "code": 200,
+        "request": "{
+            'email': 'test@gmail.com'
+        }",
+        "response": "{
+            'message': 'Email response success',
+            'code': 212
+        }"
+    },
+    {
+    "code": 200,
+        "response": "{
+            'message': 'Email response success',
+            'code': 810
+        }"
+    }
+]

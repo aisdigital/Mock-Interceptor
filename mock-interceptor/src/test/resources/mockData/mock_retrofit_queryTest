@@ -1,0 +1,17 @@
+[
+    {
+        "code": 200,
+        "requestForm": "[
+            {
+                'cpf': '012.345.678-90'
+            },
+            {
+                'myFloat': '10.5'
+            }
+        ]",
+        "response": "{
+            'message': 'Email response success',
+            'code': 870
+        }"
+    }
+]
