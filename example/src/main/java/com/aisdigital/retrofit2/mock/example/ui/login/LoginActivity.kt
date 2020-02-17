@@ -15,10 +15,11 @@ import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import com.aisdigital.retrofit2.mock.example.R
 import com.aisdigital.retrofit2.mock.example.databinding.ActivityLoginBinding
+import org.koin.android.viewmodel.ext.android.viewModel
 
 class LoginActivity : AppCompatActivity() {
 
-    private lateinit var loginViewModel: LoginViewModel
+    private val loginViewModel by viewModel<LoginViewModel>()
 
     private lateinit var binding: ActivityLoginBinding
 
@@ -26,9 +27,6 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login)
-
-        loginViewModel = ViewModelProviders.of(this, LoginViewModelFactory())
-            .get(LoginViewModel::class.java)
 
         loginViewModel.loginFormState.observe(this@LoginActivity, Observer {
             val loginState = it ?: return@Observer
