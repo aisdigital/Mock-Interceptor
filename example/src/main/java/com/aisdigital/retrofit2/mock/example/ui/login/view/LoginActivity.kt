@@ -1,6 +1,8 @@
-package com.aisdigital.retrofit2.mock.example.ui.login
+package com.aisdigital.retrofit2.mock.example.ui.login.view
 
 import android.app.Activity
+import android.content.Context
+import android.content.Intent
 import androidx.lifecycle.Observer
 import android.os.Bundle
 import android.text.Editable
@@ -14,20 +16,33 @@ import com.aisdigital.retrofit2.mock.example.base.BaseActivity
 import com.aisdigital.retrofit2.mock.example.databinding.ActivityLoginBinding
 import com.aisdigital.retrofit2.mock.example.network.ApiResult
 import com.aisdigital.retrofit2.mock.example.network.response.LoginResponse
+import com.aisdigital.retrofit2.mock.example.ui.home.view.HomeActivity
+import com.aisdigital.retrofit2.mock.example.ui.login.viewmodel.LoginViewModel
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class LoginActivity : BaseActivity() {
 
-    private val loginViewModel by viewModel<LoginViewModel>()
+    companion object {
+        fun startActivity(context: Context) {
+            val intent = Intent(context, LoginActivity::class.java)
+            context.startActivity(intent)
+        }
+    }
+
+    private val viewModel by viewModel<LoginViewModel>()
 
     private lateinit var binding: ActivityLoginBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login)
 
-        loginViewModel.loginFormState.observe(this@LoginActivity, Observer {
+        initObserver()
+        initEdittextChanges()
+    }
+
+    private fun initObserver() {
+        viewModel.loginFormState.observe(this@LoginActivity, Observer {
             val loginState = it ?: return@Observer
 
             // disable login button unless both username / password is valid
@@ -41,18 +56,20 @@ class LoginActivity : BaseActivity() {
             }
         })
 
-        loginViewModel.loginResult.observe(this@LoginActivity, Observer {
+        viewModel.loginResult.observe(this@LoginActivity, Observer {
             val loginResult = it ?: return@Observer
             hideLoading()
-            if (loginResult is ApiResult.Success) {
+            if (loginResult is ApiResult.Success && loginResult.data != null) {
                 updateUiWithUser(loginResult.data)
             } else {
                 showLoginFailed(getString(R.string.login_failed))
             }
         })
+    }
 
+    private fun initEdittextChanges() {
         binding.username.afterTextChanged {
-            loginViewModel.loginDataChanged(
+            viewModel.loginDataChanged(
                 binding.username.text.toString(),
                 binding.password.text.toString()
             )
@@ -60,14 +77,14 @@ class LoginActivity : BaseActivity() {
 
         binding.password.apply {
             afterTextChanged {
-                loginViewModel.loginDataChanged(
+                viewModel.loginDataChanged(
                     binding.username.text.toString(),
                     binding.password.text.toString()
                 )
             }
 
             binding.login.setOnClickListener {
-                onClickLogin()
+                requestLogin()
             }
         }
     }
@@ -75,17 +92,15 @@ class LoginActivity : BaseActivity() {
     private fun updateUiWithUser(response: LoginResponse) {
         val welcome = getString(R.string.welcome)
         val displayName = response.user?.displayName ?: "-"
-        // TODO : initiate successful logged in experience
 
         showSnackBarMessage(binding.root, "$welcome $displayName", onDismissed = {
-            setResult(Activity.RESULT_OK)
-            finish()
+            HomeActivity.startActivity(this)
         })
     }
 
-    private fun onClickLogin() {
+    private fun requestLogin() {
         showLoading()
-        loginViewModel.login(
+        viewModel.login(
             binding.username.text.toString(),
             binding.password.text.toString()
         )
@@ -94,7 +109,7 @@ class LoginActivity : BaseActivity() {
     private fun showLoginFailed(errorString: String) {
         Toast.makeText(applicationContext, errorString, Toast.LENGTH_SHORT).show()
         showSnackBarMessage(binding.root, errorString, onRetry = {
-            onClickLogin()
+            requestLogin()
         })
     }
 

@@ -1,4 +1,4 @@
-package com.aisdigital.retrofit2.mock.example.ui.login
+package com.aisdigital.retrofit2.mock.example.ui.login.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -10,6 +10,7 @@ import com.aisdigital.retrofit2.mock.example.network.ApiResult
 import com.aisdigital.retrofit2.mock.example.R
 import com.aisdigital.retrofit2.mock.example.network.request.LoginRequest
 import com.aisdigital.retrofit2.mock.example.network.response.LoginResponse
+import com.aisdigital.retrofit2.mock.example.ui.login.view.LoginFormState
 
 class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel() {
 
@@ -21,17 +22,21 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
 
     fun login(username: String, password: String) {
         // can be launched in a separate asynchronous job
-        val result = loginRepository.login(LoginRequest(username, password))
-        _loginResult.value = result
+        val result = loginRepository.login(LoginRequest(username, password)) {
+            _loginResult.value = it
+        }
     }
 
     fun loginDataChanged(username: String, password: String) {
         if (!isUserNameValid(username)) {
-            _loginForm.value = LoginFormState(usernameError = R.string.invalid_username)
+            _loginForm.value =
+                LoginFormState(usernameError = R.string.invalid_username)
         } else if (!isPasswordValid(password)) {
-            _loginForm.value = LoginFormState(passwordError = R.string.invalid_password)
+            _loginForm.value =
+                LoginFormState(passwordError = R.string.invalid_password)
         } else {
-            _loginForm.value = LoginFormState(isDataValid = true)
+            _loginForm.value =
+                LoginFormState(isDataValid = true)
         }
     }
 

@@ -1,4 +1,4 @@
-package com.aisdigital.retrofit2.mock.example.ui.login
+package com.aisdigital.retrofit2.mock.example.ui.login.view
 
 /**
  * Data validation state of the login form.

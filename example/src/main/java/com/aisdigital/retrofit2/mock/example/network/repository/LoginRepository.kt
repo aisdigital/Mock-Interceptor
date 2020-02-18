@@ -26,21 +26,22 @@ class LoginRepository(val dataSource: LoginDataSource) {
         user = null
     }
 
-    fun logout() {
+    fun logout(handler: (ApiResult<Void>) -> Unit) {
         user = null
-        dataSource.logout()
+        dataSource.logout(handler)
     }
 
-    fun login(request: LoginRequest): ApiResult<LoginResponse> {
+    fun login(request: LoginRequest, handler: (ApiResult<LoginResponse>) -> Unit)  {
         // handle login
-        val result = dataSource.login(request)
-        onLoginResult(result)
-        return result
+        dataSource.login(request) {
+            onLoginResult(it)
+            handler.invoke(it)
+        }
     }
 
     private fun onLoginResult(result: ApiResult<LoginResponse>) {
         if (result is ApiResult.Success) {
-            result.data.user?.id?.let { id ->
+            result.data?.user?.id?.let { id ->
                 val displayName = result.data.user.displayName?: "-"
                 setLoggedInUser(User(userId = id, displayName = displayName))
             }

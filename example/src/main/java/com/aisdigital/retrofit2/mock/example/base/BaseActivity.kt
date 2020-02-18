@@ -1,12 +1,22 @@
 package com.aisdigital.retrofit2.mock.example.base
 
-import android.app.Activity
+import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.aisdigital.retrofit2.mock.example.R
 import com.google.android.material.snackbar.Snackbar
 
 open class BaseActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setupStartAnimationView()
+    }
+
+    override fun finish() {
+        super.finish()
+        setupCloseAnimationView()
+    }
 
     fun showSnackBarMessage(
         view: View,
@@ -33,4 +43,12 @@ open class BaseActivity : AppCompatActivity() {
 
     open fun showLoading() {}
     open fun hideLoading() {}
+
+    protected open fun setupStartAnimationView() {
+        overridePendingTransition(R.anim.slide_in_right_to_left, R.anim.slide_out_rigth_to_left)
+    }
+
+    protected open fun setupCloseAnimationView() {
+        overridePendingTransition(R.anim.slide_in_left_to_right, R.anim.slide_out_left_to_right)
+    }
 }
