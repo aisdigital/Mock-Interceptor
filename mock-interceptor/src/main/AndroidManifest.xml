@@ -1,2 +1,2 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.aisdigital.retrofit2.mock" />
+    package="br.com.aisdigital.retrofit2.mock" />

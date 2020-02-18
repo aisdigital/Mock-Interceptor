@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.aisdigital.retrofit2.mock.example">
+    package="br.com.aisdigital.retrofit2.mock.example">
 
     <application
-        android:name=".base.BaseApplication"
+        android:name="br.com.aisdigital.retrofit2.mock.example.base.BaseApplication"
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
