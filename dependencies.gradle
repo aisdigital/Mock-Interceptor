@@ -6,6 +6,7 @@ project.ext {
     // Network dependencies
     retrofitVersion = "2.7.1"
     retrfitGsonConverterVersion = "2.8.6"
+    retrofitLoggingVersion = "3.11.0"
 
     // Logging
     timberVersion = "4.7.1"

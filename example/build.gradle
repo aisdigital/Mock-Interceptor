@@ -10,6 +10,7 @@ android {
 
 
     defaultConfig {
+        flavorDimensions "default"
         applicationId "com.aisdigital.retrofit2.mock.example"
         minSdkVersion 21
         targetSdkVersion 29
@@ -30,6 +31,14 @@ android {
         enabled = true
     }
 
+    productFlavors {
+        mock {
+            buildConfigField "String", "BASE_URL", "\"http://localhost:8080\""
+        }
+        dev {
+            buildConfigField "String", "BASE_URL", "\"https://MyCoolAPI.com\""
+        }
+    }
 }
 
 dependencies {
