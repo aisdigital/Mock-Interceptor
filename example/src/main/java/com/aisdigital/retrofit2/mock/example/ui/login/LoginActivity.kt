@@ -2,22 +2,21 @@ package com.aisdigital.retrofit2.mock.example.ui.login
 
 import android.app.Activity
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
-import androidx.annotation.StringRes
-import androidx.appcompat.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
-import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import com.aisdigital.retrofit2.mock.example.R
+import com.aisdigital.retrofit2.mock.example.base.BaseActivity
 import com.aisdigital.retrofit2.mock.example.databinding.ActivityLoginBinding
+import com.aisdigital.retrofit2.mock.example.network.ApiResult
+import com.aisdigital.retrofit2.mock.example.network.response.LoginResponse
 import org.koin.android.viewmodel.ext.android.viewModel
 
-class LoginActivity : AppCompatActivity() {
+class LoginActivity : BaseActivity() {
 
     private val loginViewModel by viewModel<LoginViewModel>()
 
@@ -44,18 +43,12 @@ class LoginActivity : AppCompatActivity() {
 
         loginViewModel.loginResult.observe(this@LoginActivity, Observer {
             val loginResult = it ?: return@Observer
-
-            binding.loading.visibility = View.GONE
-            if (loginResult.error != null) {
-                showLoginFailed(loginResult.error)
+            hideLoading()
+            if (loginResult is ApiResult.Success) {
+                updateUiWithUser(loginResult.data)
+            } else {
+                showLoginFailed(getString(R.string.login_failed))
             }
-            if (loginResult.success != null) {
-                updateUiWithUser(loginResult.success)
-            }
-            setResult(Activity.RESULT_OK)
-
-            //Complete and destroy login activity once successful
-            finish()
         })
 
         binding.username.afterTextChanged {
@@ -73,37 +66,44 @@ class LoginActivity : AppCompatActivity() {
                 )
             }
 
-            setOnEditorActionListener { _, actionId, _ ->
-                when (actionId) {
-                    EditorInfo.IME_ACTION_DONE ->
-                        loginViewModel.login(
-                            binding.username.text.toString(),
-                            binding.password.text.toString()
-                        )
-                }
-                false
-            }
-
             binding.login.setOnClickListener {
-                binding.loading.visibility = View.VISIBLE
-                loginViewModel.login(binding.username.text.toString(), binding.password.text.toString())
+                onClickLogin()
             }
         }
     }
 
-    private fun updateUiWithUser(model: LoggedInUserView) {
+    private fun updateUiWithUser(response: LoginResponse) {
         val welcome = getString(R.string.welcome)
-        val displayName = model.displayName
+        val displayName = response.user?.displayName ?: "-"
         // TODO : initiate successful logged in experience
-        Toast.makeText(
-            applicationContext,
-            "$welcome $displayName",
-            Toast.LENGTH_LONG
-        ).show()
+
+        showSnackBarMessage(binding.root, "$welcome $displayName", onDismissed = {
+            setResult(Activity.RESULT_OK)
+            finish()
+        })
     }
 
-    private fun showLoginFailed(@StringRes errorString: Int) {
+    private fun onClickLogin() {
+        showLoading()
+        loginViewModel.login(
+            binding.username.text.toString(),
+            binding.password.text.toString()
+        )
+    }
+
+    private fun showLoginFailed(errorString: String) {
         Toast.makeText(applicationContext, errorString, Toast.LENGTH_SHORT).show()
+        showSnackBarMessage(binding.root, errorString, onRetry = {
+            onClickLogin()
+        })
+    }
+
+    override fun hideLoading() {
+        binding.loading.visibility = View.GONE
+    }
+
+    override fun showLoading() {
+        binding.loading.visibility = View.VISIBLE
     }
 }
 
