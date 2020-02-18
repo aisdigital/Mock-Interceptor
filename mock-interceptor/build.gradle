@@ -1,6 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'maven-publish'
 apply from: '../dependencies.gradle'
 
 android {
@@ -50,4 +51,21 @@ dependencies {
     // Required when using synchronise method calls with InstantTaskExecutorRule
     testImplementation "android.arch.core:core-testing:$project.archTestingVersion"
 
+}
+
+task sourceJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier "sources"
+}
+
+publishing {
+    publications {
+        arr(MavenPublication) {
+            groupId project.groupId
+            artifactId project.libName
+            version project.libVersion
+            artifact(sourceJar)
+            artifact("$buildDir/outputs/aar/mock-interceptor-release.aar")
+        }
+    }
 }
