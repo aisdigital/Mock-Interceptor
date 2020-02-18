@@ -3,13 +3,14 @@ package br.com.aisdigital.retrofit2.util
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
 import com.google.gson.JsonSyntaxException
+import okhttp3.Interceptor
 import okhttp3.logging.HttpLoggingInterceptor
 import timber.log.Timber
 
 class PrettyLoggingInterceptor {
     companion object {
         private const val LOG_TAG: String = "Retrofit"
-        fun getInterceptor(): HttpLoggingInterceptor {
+        fun getInterceptor(): Interceptor {
             return HttpLoggingInterceptor( HttpLoggingInterceptor.Logger { message ->
                 if (!message.isNullOrEmpty()) {
                     var msg = message

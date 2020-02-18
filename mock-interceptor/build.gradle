@@ -25,7 +25,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-
 }
 
 dependencies {
@@ -53,7 +52,7 @@ dependencies {
 
 }
 
-task sourceJar(type: Jar) {
+task sourceJar(dependsOn: [build], type: Jar) {
     from android.sourceSets.main.java.srcDirs
     archiveClassifier.set("sources")
 }
