@@ -21,9 +21,9 @@ class BaseApplication : Application() {
             androidContext(this@BaseApplication)
             modules(
                 listOf(
+                    retrofitModule,
                     repositoryModule,
-                    viewModelModule,
-                    retrofitModule
+                    viewModelModule
                 )
             )
         }

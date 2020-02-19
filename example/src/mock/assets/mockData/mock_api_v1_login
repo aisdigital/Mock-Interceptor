@@ -1,0 +1,15 @@
+[
+    {
+        "code": 200,
+        "request": "{
+            'username': 'admin',
+            'password': '123456'
+        }",
+        "response": "{
+            'user': {
+                'id': '91239',
+                'display_name': 'This is cool'
+            }
+        }"
+    }
+]

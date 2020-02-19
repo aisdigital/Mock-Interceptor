@@ -9,7 +9,6 @@ android {
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
 
-
     defaultConfig {
         flavorDimensions "default"
         applicationId "br.com.aisdigital.retrofit2.mock.example"
@@ -40,6 +39,11 @@ android {
             buildConfigField "String", "BASE_URL", "\"https://MyCoolAPI.com\""
         }
     }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
@@ -52,12 +56,22 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
 
+
+    //TODO fix having to add timber
+    // Logging
+    implementation "com.jakewharton.timber:timber:$project.timberVersion"
+
     // Mock-Interceptor
-    implementation "br.com.aisdigital:Mock-Interceptor:$project.libVersion"
+//    implementation "br.com.aisdigital:Mock-Interceptor:$project.libVersion"
+    implementation project(':mock-interceptor')
 
     //Retrofit
     implementation "com.squareup.retrofit2:retrofit:$project.retrofitVersion"
     implementation "com.squareup.retrofit2:converter-gson:$project.retrofitVersion"
+
+    implementation('com.github.ihsanbal:LoggingInterceptor:3.0.0') {
+        exclude group: 'org.json', module: 'json'
+    }
 
     // Dependency injection
     implementation "org.koin:koin-android-viewmodel:$project.koinVersion"

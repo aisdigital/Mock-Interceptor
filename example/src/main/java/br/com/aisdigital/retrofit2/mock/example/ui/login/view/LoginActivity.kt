@@ -27,7 +27,7 @@ class LoginActivity : br.com.aisdigital.retrofit2.mock.example.base.BaseActivity
         }
     }
 
-    private val viewModel by viewModel<LoginViewModel>()
+    val viewModel by viewModel<LoginViewModel>()
 
     private lateinit var binding: ActivityLoginBinding
 
@@ -40,7 +40,7 @@ class LoginActivity : br.com.aisdigital.retrofit2.mock.example.base.BaseActivity
     }
 
     private fun initObserver() {
-        viewModel.loginFormState.observe(this@LoginActivity, Observer {
+        viewModel.loginFormState.observe(this, Observer {
             val loginState = it ?: return@Observer
 
             // disable login button unless both username / password is valid

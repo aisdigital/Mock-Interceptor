@@ -5,6 +5,7 @@ import br.com.aisdigital.retrofit2.mock.example.network.ApiResult
 import br.com.aisdigital.retrofit2.mock.example.network.model.User
 import br.com.aisdigital.retrofit2.mock.example.network.request.LoginRequest
 import br.com.aisdigital.retrofit2.mock.example.network.response.LoginResponse
+import okhttp3.ResponseBody
 
 /**
  * Class that requests authentication and user information from the remote data source and
@@ -26,7 +27,7 @@ class LoginRepository(val dataSource: LoginDataSource) {
         user = null
     }
 
-    fun logout(handler: (ApiResult<Void>) -> Unit) {
+    fun logout(handler: (ApiResult<ResponseBody>) -> Unit) {
         user = null
         dataSource.logout(handler)
     }

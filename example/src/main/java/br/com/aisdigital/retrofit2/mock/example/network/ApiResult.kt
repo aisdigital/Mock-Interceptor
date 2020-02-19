@@ -7,7 +7,7 @@ package br.com.aisdigital.retrofit2.mock.example.network
 sealed class ApiResult<out T : Any> {
 
     data class Success<out T : Any>(val data: T? = null) : ApiResult<T>()
-    data class Error(val prettyString: String? = null, val exception: Throwable) : ApiResult<Nothing>()
+    data class Error(val prettyString: String? = null) : ApiResult<Nothing>()
 
     override fun toString(): String {
         return when (this) {
