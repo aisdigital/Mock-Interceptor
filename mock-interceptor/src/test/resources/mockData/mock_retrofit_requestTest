@@ -7,17 +7,7 @@
         "response": "{
             'message': 'Email response success',
             'code': 999
-        }",
-        "requestForm": "[
-            {
-                'key': '1',
-                'value': '100'
-            },
-            {
-                'key': 'my',
-                'value': '100'
-            }
-        ]"
+        }"
     },
     {
         "code": 200,
