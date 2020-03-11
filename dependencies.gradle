@@ -2,7 +2,7 @@ project.ext {
 
     groupId = "br.com.aisdigital"
     libName = "Mock-Interceptor"
-    libVersion = "0.0.1"
+    libVersion = "1.0.0-beta01"
 
     // Example dependencies
     koinVersion = "2.0.1"
