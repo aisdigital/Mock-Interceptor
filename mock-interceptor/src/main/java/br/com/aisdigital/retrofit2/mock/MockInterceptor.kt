@@ -16,7 +16,7 @@ import java.nio.charset.Charset
  * @author Natan Guilherme
  * @since 02/28/19
  */
-open class MockInterceptor(private val context: Context) : Interceptor {
+open class MockInterceptor(private val context: Context, var makeRequestIfFail: Boolean = true) : Interceptor {
 
     companion object {
         const val MOCK_SPLIT_FILE = "#### BEGIN"
@@ -37,7 +37,6 @@ open class MockInterceptor(private val context: Context) : Interceptor {
         val mockFilePath = getMockFilePath(request?.url())
         // Find and return the json string
         val mockFileContent = getMockFile(mockFilePath)
-
 
         if (mockFileContent.isEmpty())
             Timber.tag(LOG_TAG).i("Mock file not found at: $mockFilePath")
@@ -61,6 +60,11 @@ open class MockInterceptor(private val context: Context) : Interceptor {
             mockItem.rawOutput?.let {
                 responseJson = it
             }
+        }
+
+        if(makeRequestIfFail && code == DEFAULT_ERROR) {
+            val request = chain!!.request()
+            return chain.proceed(request)
         }
 
         return Response.Builder()
