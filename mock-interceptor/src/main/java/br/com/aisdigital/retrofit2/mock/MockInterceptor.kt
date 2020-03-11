@@ -63,8 +63,7 @@ open class MockInterceptor(private val context: Context, var makeRequestIfFail: 
         }
 
         if(makeRequestIfFail && code == DEFAULT_ERROR) {
-            val request = chain!!.request()
-            return chain.proceed(request)
+            return chain!!.proceed(request)
         }
 
         return Response.Builder()
@@ -189,7 +188,7 @@ open class MockInterceptor(private val context: Context, var makeRequestIfFail: 
 
                     for (lineIndex in 0 until lines.size) {
                         val lineStr = lines[lineIndex]
-                        if(lineStr.toUpperCase().contains("ID")) {
+                        if(lineStr.toUpperCase().contains("ID =")) {
                             val idSplit = lineStr.split("=")
                             val lineID = idSplit[1].trim()
                             if(lineID == id) {
