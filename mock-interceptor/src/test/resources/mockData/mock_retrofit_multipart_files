@@ -1,29 +1,42 @@
+#### BEGIN
 [
     {
-        "code": 200,
-        "requestForm": "[
-            {
-                'MyFirstParam': 'MyFirstParamValue'
-            }
-        ]",
-        "response": "{
-            'message': 'Email response success',
-            'code': 170
-        }"
+        "id": "1",
+        "response_code": 200
     },
     {
-        "code": 201,
-        "requestForm": "[
-            {
-                'MyFirstParam': 'MyFirstParamValue'
-            },
-            {
-                'MySecondParam': 'MySecondParamValue'
-            }
-        ]",
-        "response": "{
-            'message': 'Email response success',
-            'code': 112
-        }"
+        "id": "2",
+        "response_code": 201
     }
 ]
+
+#### BEGIN
+// All params are strings
+id = 1
+[
+    {
+        "MyFirstParam": "MyFirstParamValue"
+    }
+]
+#### OUTPUT
+{
+    "message": "Email response success",
+    "code": 170
+}
+
+#### BEGIN
+// All params are strings
+id = 2
+[
+    {
+        "MyFirstParam": "MyFirstParamValue"
+    },
+    {
+        "MySecondParam": "MySecondParamValue"
+    }
+]
+#### OUTPUT
+{
+    "message": "Email response success",
+    "code": 112
+}

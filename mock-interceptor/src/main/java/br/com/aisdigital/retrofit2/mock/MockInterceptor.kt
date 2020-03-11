@@ -19,6 +19,8 @@ import java.nio.charset.Charset
 open class MockInterceptor(private val context: Context) : Interceptor {
 
     companion object {
+        const val MOCK_SPLIT_FILE = "#### BEGIN"
+        const val MOCK_SPLIT_OUTPUT = "#### OUTPUT"
         // The server either does not recognize the request method, or it lacks the ability to fulfil the request.
         const val DEFAULT_ERROR = 501
         private const val LOG_TAG = "MockInterceptor"
@@ -34,27 +36,30 @@ open class MockInterceptor(private val context: Context) : Interceptor {
         val request = chain?.request()
         val mockFilePath = getMockFilePath(request?.url())
         // Find and return the json string
-        val mockFileJSON = getJson(mockFilePath)
-        // Convert the Json String to list
-        val mockJsonList = gson.fromJson(mockFileJSON, Array<MockJSON>::class.java)
-        val mockJSON: MockJSON? = getMockJSON(request, mockJsonList)
+        val mockFileContent = getMockFile(mockFilePath)
 
-        if (mockFileJSON.isEmpty())
+
+        if (mockFileContent.isEmpty())
             Timber.tag(LOG_TAG).i("Mock file not found at: $mockFilePath")
         else
             Timber.tag(LOG_TAG).i("Mock file found at: $mockFilePath")
 
-        if (mockJSON == null && mockFileJSON.isNotEmpty())
+        val mockItems = parseInput(mockFileContent)
+
+        val mockItem: MockData? = getMockData(request, mockItems)
+
+
+        if (mockItem == null && mockFileContent.isNotEmpty())
             Timber.tag(LOG_TAG).i("There wasn't any item in mock file that match with the current request configuration")
 
         // use default failure code mock object have not been found
         var code = DEFAULT_ERROR
 
         var responseJson = ""
-        if (mockJSON != null) {
-            code = mockJSON.code
-            mockJSON.response?.let {
-                responseJson = fixJSON(it)
+        if (mockItem != null) {
+            code = mockItem.responseCode
+            mockItem.rawOutput?.let {
+                responseJson = it
             }
         }
 
@@ -73,15 +78,19 @@ open class MockInterceptor(private val context: Context) : Interceptor {
         return "mockData/mock$updatePath"
     }
 
-    private fun getMockJSON(request: Request?, mockJsonList: Array<MockJSON>?): MockJSON? {
+    private fun getMockData(request: Request?, mockItems: Array<MockData>?): MockData? {
         val paramURL = getParamURL(request)
         val paramJSON = getParamJSON(list = paramURL)
         val requestBody = request?.body()
         var requestJSON = ""
-        if (requestBody != null && mockJsonList != null) {
+        if (requestBody != null && mockItems != null) {
             requestJSON = getRequestBodyJSON(requestBody)
         }
-        return getMockJSON(mockJsonList, requestJSON, paramJSON)
+        mockItems?.forEach { mockData ->
+            if(checkIfJsonIsEqual(requestJSON, paramJSON, mockData.rawInput))
+                return mockData
+        }
+        return null
     }
 
     private fun getRequestBodyJSON(requestBody: RequestBody): String {
@@ -97,41 +106,26 @@ open class MockInterceptor(private val context: Context) : Interceptor {
         return buffer.readString(charset)
     }
 
-    private fun getMockJSON(list: Array<MockJSON>?, requestJson: String, paramJson: String): MockJSON? {
-        list?.forEach { jsonObject ->
-            val mockRequestJson = fixJSON(jsonObject.request)
-            val mockFormJson = fixJSON(jsonObject.requestForm)
-            if(checkIfJsonIsEqual(requestJson, paramJson, mockRequestJson, mockFormJson))
-                return jsonObject
-        }
-        return null
-    }
-
-    private fun checkIfJsonIsEqual(requestJson: String, paramJson: String, mockRequestJson: String, mockFormJson: String): Boolean {
-        var mockRequestJsonElement: JsonObject? = null
-        var requestJsonElement: JsonObject? = null
-        var mockFormJsonElement: JsonArray? = null
-        var formJsonElement: JsonArray? = null
-        var requestEqual = mockRequestJson == requestJson
-        var formEqual = mockFormJson == paramJson
-
+    private fun checkIfJsonIsEqual(requestJson: String, paramJson: String, mockInput: String?): Boolean {
+        var mockElement: JsonElement? = null
+        var requestJsonElement: JsonElement? = null
+        var formJsonElement: JsonElement? = null
+        var requestEqual = mockInput == requestJson
+        var formEqual = mockInput == paramJson
 
         //convert Json String to JsonObject
-        if(mockRequestJson.isNotEmpty())
-            mockRequestJsonElement = JsonParser().parse(mockRequestJson) as JsonObject
+        if(mockInput != null && mockInput.isNotEmpty())
+            mockElement = JsonParser().parse(mockInput) as JsonElement
         if(requestJson.isNotEmpty())
-            requestJsonElement = JsonParser().parse(requestJson) as JsonObject
-        if(mockFormJson.isNotEmpty())
-            mockFormJsonElement = JsonParser().parse(mockFormJson) as JsonArray
+            requestJsonElement = JsonParser().parse(requestJson) as JsonElement
         if(paramJson.isNotEmpty())
-            formJsonElement = JsonParser().parse(paramJson) as JsonArray
+            formJsonElement = JsonParser().parse(paramJson) as JsonElement
 
         // Check if all its content is equal. Even if the order is different
-        if(mockRequestJsonElement != null && requestJsonElement != null)
-            requestEqual = mockRequestJsonElement == requestJsonElement
-
-        if(mockFormJsonElement != null && formJsonElement != null)
-            formEqual = mockFormJsonElement == formJsonElement
+        if(mockElement != null) {
+            requestEqual = mockElement == requestJsonElement
+            formEqual = mockElement == formJsonElement
+        }
 
         // return object if both requestType are equals.
         if (requestEqual && formEqual)
@@ -146,15 +140,14 @@ open class MockInterceptor(private val context: Context) : Interceptor {
     }
 
     /**
-     * This fix json that have character ' to "
-     * It also Double parse it to remove whitespaces, lines, etc
+     * Fix formatting
      */
-    private fun fixJSON(json: String?): String {
+    private fun fixFormattingJSON(json: String?): String {
         var jsonFixed = ""
         json?.let {
-            val replaced = json.replace("\'".toRegex(), "\"") // fix json ' to ""
             try {
-                jsonFixed = gson.toJson(JsonParser().parse(replaced)) // fix formatting
+                if(it.trim().isNotEmpty())
+                    jsonFixed = gson.toJson(JsonParser().parse(it)) // fix formatting
             }
             catch (e: JsonSyntaxException) {
                 e.printStackTrace()
@@ -163,7 +156,61 @@ open class MockInterceptor(private val context: Context) : Interceptor {
         return jsonFixed
     }
 
-    protected open fun getJson(filepath: String): String {
+    protected open fun splitFileContent(fileContent: String): List<String>? {
+        try {
+            val split = fileContent.split(MOCK_SPLIT_FILE).filter {
+                it.trim().isNotEmpty()
+            }
+            return split
+
+        } catch (e: IOException) {
+        }
+        return null
+    }
+
+    protected open fun parseInput(fileContent: String): Array<MockData>? {
+        val inputDatas = splitFileContent(fileContent)
+        if(inputDatas== null || inputDatas.size < 2)
+            return null
+
+        try {
+            val inputDataJson = inputDatas[0]
+            val mockJsonList = gson.fromJson(inputDataJson, Array<MockData>::class.java)
+            mockJsonList.forEach { data ->
+                val id = data.id
+                for (i in 1 until inputDatas.size) {
+                    //apply your logic
+                    var inputItem = inputDatas[i]
+                    val lines = inputItem.lines()
+
+                    for (lineIndex in 0 until lines.size) {
+                        val lineStr = lines[lineIndex]
+                        if(lineStr.toUpperCase().contains("ID")) {
+                            val idSplit = lineStr.split("=")
+                            val lineID = idSplit[1].trim()
+                            if(lineID == id) {
+                                val newInputItem = inputItem.replace(lineStr, "").replace("\n".toRegex(), "")
+                                val outputSpit = newInputItem.split(MOCK_SPLIT_OUTPUT)
+                                val jsonInput = outputSpit[0]
+                                data.rawInput = fixFormattingJSON(jsonInput)
+                                if(outputSpit.size == 2) {
+                                    val jsonOutput = outputSpit[1]
+                                    data.rawOutput = fixFormattingJSON(jsonOutput)
+                                }
+                                break
+                            }
+                        }
+                    }
+                }
+            }
+            return mockJsonList
+
+        } catch (e: IOException) {
+        }
+        return null
+    }
+
+    protected open fun getMockFile(filepath: String): String {
         var json = ""
         try {
             val stream = context.applicationContext.assets.open(filepath)
@@ -178,7 +225,8 @@ open class MockInterceptor(private val context: Context) : Interceptor {
         val reader = BufferedReader(InputStreamReader(stream, "UTF-8"))
 
         for (line in reader.readLines()) {
-            builder.append(line)
+            if(!line.contains("//") && line.trim().isNotEmpty())
+                builder.append(line + "\n")
         }
 
         reader.close()
@@ -281,6 +329,14 @@ open class MockInterceptor(private val context: Context) : Interceptor {
             json = jsonArray.toString()
         }
         return json
+    }
+
+    class MockData (
+        @SerializedName("id") val id: String,
+        @SerializedName("response_code") val responseCode: Int
+    ) {
+        var rawInput: String? = null
+        var rawOutput: String? = null
     }
 
     data class ParamData(

@@ -1,17 +1,49 @@
+#### BEGIN
+// Passing Fields to api and return a json
 [
     {
-        "code": 201,
-        "requestForm": "[
-            {
-                'cpf': '012.345.678-90'
-            },
-            {
-                'myMap': '10'
-            }
-        ]",
-        "response": "{
-            'message': 'Email response success',
-            'code': 470
-        }"
+        "id": "1",
+        "response_code": 202
+    },
+    {
+        "id": "2",
+        "response_code": 201
+    },
+    {
+        "id": "3",
+        "response_code": 200
     }
 ]
+
+#### BEGIN
+// All params are strings
+id = 1
+[
+    {
+        "cpf": "012.345.678-90"
+    },
+    {
+        "myMap": "10"
+    }
+]
+#### OUTPUT
+{
+    "message": "Email response success",
+    "code": 470
+}
+
+#### BEGIN
+id = 2
+[
+    {
+        "cpf": "111.111.111-11"
+    },
+    {
+        "myMap": "11"
+    }
+]
+#### OUTPUT
+{
+    "message": "Email response success",
+    "code": 888
+}

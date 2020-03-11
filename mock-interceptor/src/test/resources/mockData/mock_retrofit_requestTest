@@ -1,34 +1,58 @@
+
+
+#### BEGIN
+// POST
 [
     {
-        "code": 200,
-        "request": "{
-            'email': 'myEmail@gmail.com'
-        }",
-        "response": "{
-            'message': 'Email response success',
-            'code': 999
-        }"
+        "id": "1",
+        "response_code": 200
     },
     {
-        "code": 200,
-        "request": "{
-            'email': 'test@gmail.com'
-        }",
-        "response": "{
-            'message': 'Email response success',
-            'code': 999
-        }"
+        "id": "2",
+        "response_code": 200
     },
     {
-        "code": 400,
-        "request": "{
-            'email': 'testFail@gmail.com'
-        }"
+        "id": "3",
+        "response_code": 400
     },
     {
-    "code": 500,
-        "request": "{
-            'email': 'testServerError@gmail.com'
-        }"
+        "id": "4",
+        "response_code": 500
     }
 ]
+
+
+#### BEGIN
+id = 1
+{
+    "email": "myEmail@gmail.com"
+}
+#### OUTPUT
+{
+    "message": "Email response success",
+    "code": 999
+}
+
+#### BEGIN
+id = 2
+{
+    "email": "test@gmail.com"
+}
+
+#### OUTPUT
+{
+    "message": "Email response success",
+    "code": 999
+}
+
+#### BEGIN
+id = 3
+{
+    "email": "testFail@gmail.com"
+}
+
+#### BEGIN
+id = 4
+{
+    "email": "testServerError@gmail.com"
+}

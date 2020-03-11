@@ -1,31 +1,50 @@
+#### BEGIN
+// Passing Fields to api and return a json
 [
     {
-        "code": 200,
-        "requestForm": "[
-            {
-                'cpf': '012.345.678-90'
-            }
-        ]",
-        "response": "{
-            'message': 'Email response success',
-            'code': 210
-        }"
+        "id": "1",
+        "response_code": 200
     },
     {
-        "code": 200,
-        "request": "{
-            'email': 'test@gmail.com'
-        }",
-        "response": "{
-            'message': 'Email response success',
-            'code': 212
-        }"
+        "id": "2",
+        "response_code": 200
     },
     {
-    "code": 200,
-        "response": "{
-            'message': 'Email response success',
-            'code': 810
-        }"
+        "id": "3",
+        "response_code": 200
     }
 ]
+
+#### BEGIN
+// All params are strings
+id = 1
+[
+    {
+        "cpf": "012.345.678-90"
+    }
+]
+#### OUTPUT
+{
+    "message": "Email response success",
+    "code": 210
+}
+
+#### BEGIN
+id = 2
+{
+    "email": "test@gmail.com"
+}
+#### OUTPUT
+{
+    "message": "Email response success",
+    "code": 212
+}
+
+#### BEGIN
+id = 3
+// OUTPUT is still required if API is GET without any param
+#### OUTPUT
+{
+    "message": "Email response success",
+    "code": 810
+}

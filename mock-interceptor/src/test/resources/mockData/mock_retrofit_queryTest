@@ -1,17 +1,25 @@
+#### BEGIN
+// Passing Fields to api and return a json
 [
     {
-        "code": 200,
-        "requestForm": "[
-            {
-                'cpf': '012.345.678-90'
-            },
-            {
-                'myFloat': '10.5'
-            }
-        ]",
-        "response": "{
-            'message': 'Email response success',
-            'code': 870
-        }"
+        "id": "1",
+        "response_code": 200
     }
 ]
+
+#### BEGIN
+// All params are strings
+id = 1
+[
+    {
+        "cpf": "012.345.678-90"
+    },
+    {
+        "myFloat": "10.5"
+    }
+]
+#### OUTPUT
+{
+    "message": "Email response success",
+    "code": 870
+}
