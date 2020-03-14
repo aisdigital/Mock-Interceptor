@@ -58,11 +58,12 @@ open class MockInterceptor(private val context: Context, var makeRequestIfFail: 
         if (mockItem != null) {
             code = mockItem.responseCode
             mockItem.rawOutput?.let {
-                responseJson = it
+                if(code < 500 || code > 599)
+                    responseJson = it
             }
         }
 
-        if(makeRequestIfFail && code == DEFAULT_ERROR) {
+        if(makeRequestIfFail && (mockItem == null || mockItem.error)) {
             return chain!!.proceed(request)
         }
 
@@ -145,7 +146,7 @@ open class MockInterceptor(private val context: Context, var makeRequestIfFail: 
     /**
      * Fix formatting
      */
-    private fun fixFormattingJSON(json: String?): String {
+    private fun fixFormattingJSON(mockData: MockData, json: String?): String {
         var jsonFixed = ""
         json?.let {
             try {
@@ -153,6 +154,8 @@ open class MockInterceptor(private val context: Context, var makeRequestIfFail: 
                     jsonFixed = gson.toJson(JsonParser().parse(it)) // fix formatting
             }
             catch (e: JsonSyntaxException) {
+                //TODO print to user that json is invalid
+                mockData.error = true
                 e.printStackTrace()
             }
         }
@@ -195,10 +198,10 @@ open class MockInterceptor(private val context: Context, var makeRequestIfFail: 
                                 val newInputItem = inputItem.replace(lineStr, "").replace("\n".toRegex(), "")
                                 val outputSpit = newInputItem.split(MOCK_SPLIT_OUTPUT)
                                 val jsonInput = outputSpit[0]
-                                data.rawInput = fixFormattingJSON(jsonInput)
+                                data.rawInput = fixFormattingJSON(data, jsonInput)
                                 if(outputSpit.size == 2) {
                                     val jsonOutput = outputSpit[1]
-                                    data.rawOutput = fixFormattingJSON(jsonOutput)
+                                    data.rawOutput = fixFormattingJSON(data, jsonOutput)
                                 }
                                 break
                             }
@@ -340,6 +343,7 @@ open class MockInterceptor(private val context: Context, var makeRequestIfFail: 
     ) {
         var rawInput: String? = null
         var rawOutput: String? = null
+        var error: Boolean = false
     }
 
     data class ParamData(

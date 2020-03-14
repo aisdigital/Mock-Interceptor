@@ -78,7 +78,7 @@ class RetrofitMockTest {
     fun setUp() {
         initTimber()
         val initClientBuilder = initClient(Dispatcher(SynchronousExecutorService()))
-        val mockInterceptor = object: MockInterceptor(mock(Context::class.java)) {
+        val mockInterceptor = object: MockInterceptor(mock(Context::class.java), false) {
             override fun getMockFile(filepath: String): String {
                 val file = File("src/test/resources/$filepath")
                 var json = ""
