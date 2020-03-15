@@ -231,7 +231,7 @@ open class MockInterceptor(private val context: Context, var makeRequestIfFail: 
         val reader = BufferedReader(InputStreamReader(stream, "UTF-8"))
 
         for (line in reader.readLines()) {
-            if(!line.contains("//") && line.trim().isNotEmpty())
+            if(!line.trim().startsWith("//") && line.trim().isNotEmpty())
                 builder.append(line + "\n")
         }
 
